@@ -1,0 +1,63 @@
+#Написать метод count_find_num, который принимает на вход список простых множителей (primesL) и целое число,
+#предел (limit), после чего попробуйте сгенерировать по порядку все числа.
+#Меньшие значения предела, которые имеют все и только простые множители простых чисел primesL.
+
+from functools import reduce
+import itertools
+from numpy import append, maximum
+
+
+def count_find_num(primesL, limit):
+
+    result = []
+    sum = 0
+    maximums = []
+    iters = 0
+
+    #sum2 = itertools.permutations(map(lambda x: x * x,primesL))
+    sum2 = itertools.permutations(primesL)
+    for el in sum2:
+        #print(el)
+        sum = reduce(lambda x, y: x * y, el)
+        #print(sum)
+        if sum <= limit:
+            maximums.append(sum)
+            iters += 1
+            i = 1
+        while sum <= limit:
+
+            sum = pow(el[0], i) * reduce(lambda x, y: x * y, el)
+            i += 1
+            if sum <= limit:
+                maximums.append(sum)
+
+    if maximums:
+        result.append(len(maximums))
+        result.append(max(maximums))
+    return result
+
+primesL = [2, 5]
+limit = 200
+
+print(count_find_num(primesL, limit))
+
+# primesL = [2, 3]
+# limit = 200
+# assert count_find_num(primesL, limit) == [13, 192]
+
+# primesL = [2, 5]
+# limit = 200
+# assert count_find_num(primesL, limit) == [8, 200]
+
+primesL = [2, 3, 5]
+limit = 500
+print(count_find_num(primesL, limit))
+# assert count_find_num(primesL, limit) == [12, 480]
+
+# primesL = [2, 3, 5]
+# limit = 1000
+# assert count_find_num(primesL, limit) == [19, 960]
+
+# primesL = [2, 3, 47]
+# limit = 200
+# assert count_find_num(primesL, limit) == []
