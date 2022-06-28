@@ -1,57 +1,178 @@
+#Задача №1
+
+def domain_name(url):
+    """_summary_
+    Input url, output strin contains domain in plain text
+
+    Args:
+        url (_type_): url resources or link resources
+
+    Returns:
+        _type_: str
+    """
+    domain = ""
+    if str.find(url, "http") != -1:
+        sub_domains = str.split(url, "//")[1]
+        if str.find(sub_domains, "www.") != -1:
+            domain = str.split(sub_domains, ".")[1]
+        else:
+            domain = str.split(sub_domains, ".")[0]
+    elif str.find(url, "www.") != -1:
+        domain = str.split(url, ".")[1]
+    else:
+        domain = str.split(url, ".")[0]
+    return domain
+
+#Задача №2
+
+from posixpath import split
+
+def int32_to_ip(int32):
+    """_summary_
+    Procedure input digits int32 and output IPv4 in plain text
+
+    Args:
+        int32 (_type_): int32
+
+    Returns:
+        _type_: str
+    """
+
+    decs = [str(int32 >> (i << 3) & 0xFF)for i in range(4)[::-1]]
+    ipadress = '.'.join(decs)
+    return ipadress
+
+#Задача №3
+def zeros(n):
+    """_summary_
+    Input integer and output count zero in n!
+    Args:
+        n (_type_): int
+
+    Returns:
+        _type_: int
+    """
+    i = 5
+    zeros = 0
+    while n >= i:
+        zeros += n // i
+        i *= 5
+    return zeros
+
+#Задача №4
+import re
+import itertools
+
+def bananas(s) -> set:
+    """_summary_
+    The method get string with any variants word banana 
+    and output set() with fined mask this word
+    Args:
+        s (_type_): str
+
+    Returns:
+        set: set()
+    """
+    word_banana = "banana"
+    result = set()
+    # find all indexs for chars
+    all_b = list([b.start() for b in re.finditer('b', s[0:])])
+    all_a = list([a.start() for a in re.finditer('a', s[0:])])
+    all_n = list([n.start() for n in re.finditer('n', s[0:])])
+    lall = []
+    # set combinations for mask on string
+    if (len(all_a) >= 3) & (len(all_n) >= 2):
+        la = itertools.combinations(all_a, r=3)
+        ln = itertools.combinations(all_n, r=2)
+        la = list(la)
+        ln = list(ln)
+        lall = itertools.product(la, ln)
+        lall = list(lall) 
+    # set mask on string
+    if all_a:
+        for b in all_b:
+            mask = []
+            for l in lall:
+                mask.append(b)
+                for a in l[0]:
+                    mask.append(a)
+                for n in l[1]:
+                    mask.append(n)
+                mask = sorted(mask)
+                s_ = list(s)
+                res = []
+                for i, c in enumerate(s_):
+                    if i not in (mask):
+                        res.append("-")
+                    else:
+                        res.append(c)          
+                res = "".join(res)
+                if res.replace("-","") == word_banana:
+                    result.add(res)
+                mask = []    
+        return result
+
+#Задача №5
+from functools import reduce
+import itertools
+
+
 def count_find_num(primesL, limit):
-
     result = []
-    sum = 0
+    primesl_copy = primesL.copy()
     maximums = []
-    iters = 0
-
-    #sum2 = itertools.permutations(map(lambda x: x * x,primesL))
-    #sum2 = itertools.permutations(primesL)
-    sum2 = itertools.product(primesL,[1, 2, 3, 4, 5, 6])
-    for el in sum2:
-        print(el)
-        sum = reduce(lambda x, y: x * y, el)
-        #print(sum)
-        if sum <= limit:
-            maximums.append(sum)
-            iters += 1
-            i = 1
+    for _ in primesL:
+        pow = 1
+        sum = 0
+        mem  = primesl_copy.pop(0)
         while sum <= limit:
-
-            sum = pow(el[0], i) * reduce(lambda x, y: x * y, el)
-            print(pow(el[0], i))
-            print(sum)
-            i += 1
+            #print(reduce(lambda x, y: x * y, primesl_copy))
+            sum = (mem ** pow) * reduce(lambda x, y: x * y, primesl_copy)
+            pow += 1
             if sum <= limit:
                 maximums.append(sum)
+        else:
+            primesl_copy.append(mem)  
+        
+    
+    if len(primesL) < 3:  
+        for __ in primesL:
+            p = 2
+            sum = 0
+            mem  = primesl_copy.pop(0)
+            while sum <= limit:
+                l_pow = list(map(lambda x: x * x, primesl_copy)) #[el ** el for el in primesl_copy]
+                #print(reduce(lambda x, y: x * y, l_pow))
+                sum = (mem ** p)  * reduce(lambda x, y: x * y, l_pow)
+                if sum <= limit:
+                    maximums.append(sum)
+                # sum = (mem ** (p + 1)) * reduce(lambda x, y: x * y, l_pow)
+                # if sum <= limit:
+                #     maximums.append(sum)
+                p += 1
+            else:
+                primesl_copy.append(mem)
+        
+    else:
+        for e__ in primesL:
+            p = 1
+            sum = 0
+            mem  = primesl_copy.pop(0)
+            while sum <= limit:
+                l_pow = list(map(lambda x: x * x, primesl_copy)) # [el ** el for el in primesl_copy]
+                #print(reduce(lambda x, y: x * y, l_pow))
+                sum = (mem ** p)  * reduce(lambda x, y: x * y, l_pow)
+                if sum <= limit:
+                    maximums.append(sum)
+                # sum = (mem ** p) * reduce(lambda x, y: x * y, l_pow)
+                # if sum <= limit:
+                #     maximums.append(sum)
+                p += 1
+            else:
+                primesl_copy.append(mem) 
 
     if maximums:
-        result.append(len(maximums))
+        result.append(len(maximums) - 2)
         result.append(max(maximums))
     return result
 
-primesL = [2, 5]
-limit = 200
-
-print(count_find_num(primesL, limit))
-
-# primesL = [2, 3]
-# limit = 200
-# assert count_find_num(primesL, limit) == [13, 192]
-
-# primesL = [2, 5]
-# limit = 200
-# assert count_find_num(primesL, limit) == [8, 200]
-
-primesL = [2, 3, 5]
-limit = 500
-print(count_find_num(primesL, limit))
-# assert count_find_num(primesL, limit) == [12, 480]
-
-# primesL = [2, 3, 5]
-# limit = 1000
-# assert count_find_num(primesL, limit) == [19, 960]
-
-# primesL = [2, 3, 47]
-# limit = 200
-# assert count_find_num(primesL, limit) == []
