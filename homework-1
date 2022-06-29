@@ -116,63 +116,18 @@ def bananas(s) -> set:
 from functools import reduce
 import itertools
 
-
-def count_find_num(primesL, limit):
-    result = []
-    primesl_copy = primesL.copy()
-    maximums = []
-    for _ in primesL:
-        pow = 1
-        sum = 0
-        mem  = primesl_copy.pop(0)
-        while sum <= limit:
-            #print(reduce(lambda x, y: x * y, primesl_copy))
-            sum = (mem ** pow) * reduce(lambda x, y: x * y, primesl_copy)
-            pow += 1
-            if sum <= limit:
-                maximums.append(sum)
-        else:
-            primesl_copy.append(mem)  
-        
-    
-    if len(primesL) < 3:  
-        for __ in primesL:
-            p = 2
-            sum = 0
-            mem  = primesl_copy.pop(0)
-            while sum <= limit:
-                l_pow = list(map(lambda x: x * x, primesl_copy)) #[el ** el for el in primesl_copy]
-                #print(reduce(lambda x, y: x * y, l_pow))
-                sum = (mem ** p)  * reduce(lambda x, y: x * y, l_pow)
-                if sum <= limit:
-                    maximums.append(sum)
-                # sum = (mem ** (p + 1)) * reduce(lambda x, y: x * y, l_pow)
-                # if sum <= limit:
-                #     maximums.append(sum)
-                p += 1
-            else:
-                primesl_copy.append(mem)
-        
-    else:
-        for e__ in primesL:
-            p = 1
-            sum = 0
-            mem  = primesl_copy.pop(0)
-            while sum <= limit:
-                l_pow = list(map(lambda x: x * x, primesl_copy)) # [el ** el for el in primesl_copy]
-                #print(reduce(lambda x, y: x * y, l_pow))
-                sum = (mem ** p)  * reduce(lambda x, y: x * y, l_pow)
-                if sum <= limit:
-                    maximums.append(sum)
-                # sum = (mem ** p) * reduce(lambda x, y: x * y, l_pow)
-                # if sum <= limit:
-                #     maximums.append(sum)
-                p += 1
-            else:
-                primesl_copy.append(mem) 
-
-    if maximums:
-        result.append(len(maximums) - 2)
-        result.append(max(maximums))
-    return result
-
+def count_find_num(primes_l: list, limit: int) -> list:
+    """
+    The function find prime factors for given list and border by given  limit
+    """
+    base_number = reduce((lambda a, b: a * b), primes_l, 1)
+    if base_number > limit:
+        return []
+    nums = [base_number]
+    for i in primes_l:
+        for n in nums:
+            num = n * i
+            while (num <= limit) and (num not in nums):
+                nums.append(num)
+                num *= i
+    return [len(nums), max(nums)]
